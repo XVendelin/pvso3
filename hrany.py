@@ -5,6 +5,27 @@ import cv2 as cv
 def nothing(x):
     pass
 
+def canny_with_sobel(gray, t1, t2):
+    # Compute Sobel gradients
+    sobelx = cv.Sobel(gray, cv.CV_64F, 1, 0, ksize=3)  # X gradient
+    sobely = cv.Sobel(gray, cv.CV_64F, 0, 1, ksize=3)  # Y gradient
+
+    # Compute gradient magnitude
+    gradient_magnitude = np.sqrt(sobelx**2 + sobely**2)
+    gradient_magnitude = np.uint8(255 * gradient_magnitude / np.max(gradient_magnitude))  # Normalize
+
+    # Apply thresholding (Hysteresis)
+    edges = np.zeros_like(gradient_magnitude)
+    strong_edges = gradient_magnitude > t2
+    weak_edges = (gradient_magnitude >= t1) & (gradient_magnitude < t2)
+
+    edges[strong_edges] = 255
+    edges[weak_edges] = 128  # Potential edges
+
+    return edges
+
+
+
 
 # Načítanie obrázka
 image_path = "img_und1.jpg"  # Upravte cestu k obrázku
@@ -42,7 +63,7 @@ while True:
     if s == 1:
         # Detekcia hrán pomocou Cannyho detektora
         # použiť vlastný filter prednáška 5
-        edges = cv.Canny(gray, t1, t2)
+        edges = canny_with_sobel(gray, t1, t2)
 
         # Houghova transformácia na detekciu čiar
         # toto treba prepísať
