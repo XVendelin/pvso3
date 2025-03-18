@@ -1,4 +1,4 @@
-
+*.jpg
 /.idea/
 /.venv/
 /.git/
