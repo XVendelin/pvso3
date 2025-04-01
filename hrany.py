@@ -5,17 +5,38 @@ import cv2 as cv
 def nothing(x):
     pass
 
+
+import numpy as np
+
+
+def sobel_filter(image):
+    # Sobel kernels
+    Kx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    Ky = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+
+    rows, cols = image.shape
+    sobelx = np.zeros_like(image, dtype=np.float64)
+    sobely = np.zeros_like(image, dtype=np.float64)
+
+    # Apply Sobel filters
+    for i in range(1, rows - 1):
+        for j in range(1, cols - 1):
+            region = image[i - 1:i + 2, j - 1:j + 2]
+            sobelx[i, j] = np.sum(region * Kx)
+            sobely[i, j] = np.sum(region * Ky)
+
+    return sobelx, sobely
+
+
 def canny_with_sobel(gray, t1, t2):
-    # Compute Sobel gradients
-    sobelx = cv.Sobel(gray, cv.CV_64F, 1, 0, ksize=3)  # X gradient
-    sobely = cv.Sobel(gray, cv.CV_64F, 0, 1, ksize=3)  # Y gradient
+    sobelx, sobely = sobel_filter(gray)
 
     # Compute gradient magnitude
-    gradient_magnitude = np.sqrt(sobelx**2 + sobely**2)
-    gradient_magnitude = np.uint8(255 * gradient_magnitude / np.max(gradient_magnitude))  # Normalize
+    gradient_magnitude = np.sqrt(sobelx ** 2 + sobely ** 2)
+    gradient_magnitude = (255 * gradient_magnitude / np.max(gradient_magnitude)).astype(np.uint8)
 
     # Apply thresholding (Hysteresis)
-    edges = np.zeros_like(gradient_magnitude)
+    edges = np.zeros_like(gradient_magnitude, dtype=np.uint8)
     strong_edges = gradient_magnitude > t2
     weak_edges = (gradient_magnitude >= t1) & (gradient_magnitude < t2)
 
@@ -107,7 +128,7 @@ def hough_lines_p_custom(edges, rho_res=1, theta_res=np.pi/180, threshold=50, mi
 
 
 # Načítanie obrázka
-image_path = "img_und1.jpg"  # Upravte cestu k obrázku
+image_path = "img_und4.jpg"  # Upravte cestu k obrázku
 img = cv.imread(image_path)
 if img is None:
     print("Error: Could not load image.")
@@ -125,7 +146,7 @@ cv.createTrackbar('threshold1', 'img', 150, 255, nothing)
 cv.createTrackbar('threshold2', 'img', 150, 255, nothing)
 cv.createTrackbar('min_line_length', 'img', 50, 500, nothing)
 cv.createTrackbar('max_line_gap', 'img', 10, 100, nothing)
-cv.createTrackbar('theta', 'img', 50, 100, nothing)
+cv.createTrackbar('theta', 'img', 2, 90, nothing)
 cv.createTrackbar('rho', 'img', 2, 50, nothing)
 switch = '0 : OFF \n1 : ON'
 cv.createTrackbar(switch, 'img', 0, 1, nothing)
@@ -154,11 +175,11 @@ while True:
         # toto treba prepísať
         #lines = cv.HoughLinesP(edges, 1, np.pi / 180, 50, minLineLength=min_line_length, maxLineGap=max_line_gap)
 
-        lines = hough_lines_p_custom(edges, rho, theta/100, 50, min_line_length, max_line_gap)
+        lines = hough_lines_p_custom(edges, rho, np.pi/theta, 50, min_line_length, max_line_gap)
 
         if lines is not None:
             for (x1, y1), (x2, y2) in lines:
-                cv.line(output, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv.line(output, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
     # Zobrazenie výsledku
     cv.imshow('img', output)
