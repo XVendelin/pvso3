@@ -125,7 +125,7 @@ cv.createTrackbar('threshold1', 'img', 150, 255, nothing)
 cv.createTrackbar('threshold2', 'img', 150, 255, nothing)
 cv.createTrackbar('min_line_length', 'img', 50, 500, nothing)
 cv.createTrackbar('max_line_gap', 'img', 10, 100, nothing)
-cv.createTrackbar('theta', 'img', 50, 100, nothing)
+cv.createTrackbar('theta', 'img', 2, 10, nothing)
 cv.createTrackbar('rho', 'img', 2, 50, nothing)
 switch = '0 : OFF \n1 : ON'
 cv.createTrackbar(switch, 'img', 0, 1, nothing)
@@ -154,11 +154,11 @@ while True:
         # toto treba prepísať
         #lines = cv.HoughLinesP(edges, 1, np.pi / 180, 50, minLineLength=min_line_length, maxLineGap=max_line_gap)
 
-        lines = hough_lines_p_custom(edges, rho, theta/100, 50, min_line_length, max_line_gap)
+        lines = hough_lines_p_custom(edges, rho, np.pi/theta, 50, min_line_length, max_line_gap)
 
         if lines is not None:
             for (x1, y1), (x2, y2) in lines:
-                cv.line(output, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv.line(output, (x1, y1), (x2, y2), (0, 255, 0), 1)
 
     # Zobrazenie výsledku
     cv.imshow('img', output)
