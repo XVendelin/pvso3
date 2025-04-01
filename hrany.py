@@ -128,17 +128,15 @@ def hough_lines_p_custom(edges, rho_res=1, theta_res=np.pi/180, threshold=50, mi
 
 
 # Načítanie obrázka
-image_path = "img_und4.jpg"  # Upravte cestu k obrázku
+image_path = ("img_und6.jpg")  # Upravte cestu k obrázku
 img = cv.imread(image_path)
 if img is None:
     print("Error: Could not load image.")
     exit()
 
 # Konverzia na odtiene sivej
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-
-# Použitie Gaussovho rozostrenia na zníženie šumu
-gray = cv.GaussianBlur(gray, (5, 5), 0)
+#gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+gray = np.dot(img[..., :3], [0.114, 0.587, 0.2989]).astype(np.uint8)
 
 # Vytvorenie okna s trackbarmi
 cv.namedWindow('img')
