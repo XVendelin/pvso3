@@ -46,7 +46,7 @@ def canny_with_sobel(gray, t1, t2):
     return edges
 
 
-def hough_lines_p_custom(edges, rho_res=1, theta_res=np.pi/180, threshold=50, min_line_length=50, max_line_gap=10):
+def hough_lines_p_custom(edges, rho_res=1, theta_res=4, threshold=50, min_line_length=50, max_line_gap=10):
     # Step 1: Get edge points
     y_idxs, x_idxs = np.where(edges > 0)
     num_points = len(x_idxs)
@@ -128,7 +128,7 @@ def hough_lines_p_custom(edges, rho_res=1, theta_res=np.pi/180, threshold=50, mi
 
 
 # Načítanie obrázka
-image_path = "img_und4.jpg"  # Upravte cestu k obrázku
+image_path = "img_und6.jpg"  # Upravte cestu k obrázku
 img = cv.imread(image_path)
 if img is None:
     print("Error: Could not load image.")
